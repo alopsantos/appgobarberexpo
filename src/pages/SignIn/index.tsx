@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from "react";
 import { Form } from "@unform/mobile";
 import { FormHandles } from "@unform/core";
 import Icon from "react-native-vector-icons/Feather";
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import * as Yup from "yup";
 import {
   Image,
@@ -14,6 +14,7 @@ import {
   Alert,
 } from "react-native";
 
+import { useAuth } from "../../hooks/auth";
 import getValidationErrors from "../../utils/getValidationErrors";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -26,7 +27,6 @@ import {
   CreateAccountButton,
   CreateAccountButtonText,
 } from "./styles";
-import { color } from "react-native-reanimated";
 interface SignInFormData {
   email: string;
   password: string;
@@ -37,31 +37,42 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
-  const handleSignIn = useCallback(async (data: SignInFormData) => {
-    try {
-      formRef.current?.setErrors({});
+  const { signIn } = useAuth();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required("E-mail é obrigatório")
-          .email("Digite um e-mail válido"),
-        password: Yup.string().required("Sua senha é obrigatório"),
-      });
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
-        formRef.current?.setErrors(errors);
-        return;
+  const handleSignIn = useCallback(
+    async (data: SignInFormData) => {
+      console.log(JSON.stringify(data));
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required("E-mail obrigatorio")
+            .email("Digite um e-email válido"),
+          password: Yup.string().required("Sua senha é obrigatorio"),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        Alert.alert(
+          "Erro na autenticação",
+          "Ocorreu um erro ao fazer login, cheque as credenciais."
+        );
       }
-      Alert.alert(
-        "Erro na autenticação",
-        "Ocorreu um erro ao fazer login, cheque as credenciais."
-      );
-    }
-  }, []);
+    },
+    [SignIn]
+  );
   return (
     <>
       <KeyboardAvoidingView
@@ -100,10 +111,14 @@ const SignIn: React.FC = () => {
                 icon="lock"
                 placeholder="Senha"
                 onSubmitEditing={() => {
-                formRef.current?.submitForm();
+                  formRef.current?.submitForm();
                 }}
               />
-              <Button onPress={()=> {formRef.current?.submitForm();}}>
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
                 Entrar
               </Button>
             </Form>
@@ -114,7 +129,7 @@ const SignIn: React.FC = () => {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
+      <CreateAccountButton onPress={() => navigation.navigate("SignUp")}>
         <Icon name="log-in" size={20} color="#ff9000" />
         <CreateAccountButtonText>Cirar uma conta</CreateAccountButtonText>
       </CreateAccountButton>

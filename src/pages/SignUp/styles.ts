@@ -12,7 +12,7 @@ export const Container = styled.View`
 export const Title = styled.Text`
   font-size: 20px;
   color: #f4ede8;
-  /* font-family: 'RobotoSlab-Medium'; */
+  font-family: 'RobotoSlab_400Regular';
   margin: 64px 0 24px;
 `;
 
@@ -34,6 +34,6 @@ export const BackToSignInButton = styled.TouchableOpacity`
 export const BackToSignInButtonTex = styled.Text`
   color: #fff;
   font-size: 18px;
-  /* font-family: 'RobotoSlab-Regular'; */
+  font-family: 'RobotoSlab_400Regular';
   margin-left: 16px;
 `;
