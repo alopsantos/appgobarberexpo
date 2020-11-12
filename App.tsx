@@ -9,6 +9,7 @@ import {
   RobotoSlab_500Medium,
 } from "@expo-google-fonts/roboto-slab";
 
+import AppProvider from "./src/hooks/";
 import AuthRoutes from "./src/routes";
 
 export default function App() {
@@ -22,9 +23,11 @@ export default function App() {
     return (
       <NavigationContainer>
         <StatusBar barStyle="light-content" backgroundColor="#312e38" />
-        <View style={{ flex: 1, backgroundColor: "#312e38" }}>
-          <AuthRoutes />
-        </View>
+        <AppProvider>
+          <View style={{ flex: 1, backgroundColor: "#312e38" }}>
+            <AuthRoutes />
+          </View>
+        </AppProvider>
       </NavigationContainer>
     );
   }

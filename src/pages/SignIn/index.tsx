@@ -18,7 +18,9 @@ import { useAuth } from "../../hooks/auth";
 import getValidationErrors from "../../utils/getValidationErrors";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
+
 import logoImg from "../../assets/logo.png";
+
 import {
   Container,
   Title,
@@ -27,6 +29,7 @@ import {
   CreateAccountButton,
   CreateAccountButtonText,
 } from "./styles";
+
 interface SignInFormData {
   email: string;
   password: string;
@@ -38,10 +41,9 @@ const SignIn: React.FC = () => {
   const navigation = useNavigation();
 
   const { signIn } = useAuth();
-
+  
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
-      console.log(JSON.stringify(data));
       try {
         formRef.current?.setErrors({});
 
@@ -55,11 +57,14 @@ const SignIn: React.FC = () => {
         await schema.validate(data, {
           abortEarly: false,
         });
+
         await signIn({
           email: data.email,
           password: data.password,
         });
+
       } catch (err) {
+        console.log(err);
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
           formRef.current?.setErrors(errors);
@@ -86,6 +91,7 @@ const SignIn: React.FC = () => {
         >
           <Container>
             <Image source={logoImg} />
+
             <View>
               <Title>Faça seu logon</Title>
             </View>
@@ -107,13 +113,14 @@ const SignIn: React.FC = () => {
                 ref={passwordInputRef}
                 secureTextEntry
                 returnKeyType="send"
-                name="password"
-                icon="lock"
-                placeholder="Senha"
                 onSubmitEditing={() => {
                   formRef.current?.submitForm();
                 }}
+                name="password"
+                icon="lock"
+                placeholder="Senha"
               />
+
               <Button
                 onPress={() => {
                   formRef.current?.submitForm();
@@ -131,7 +138,7 @@ const SignIn: React.FC = () => {
 
       <CreateAccountButton onPress={() => navigation.navigate("SignUp")}>
         <Icon name="log-in" size={20} color="#ff9000" />
-        <CreateAccountButtonText>Cirar uma conta</CreateAccountButtonText>
+        <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
       </CreateAccountButton>
     </>
   );
